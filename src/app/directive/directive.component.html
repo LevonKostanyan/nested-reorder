@@ -1,0 +1,32 @@
+<div *ngFor="let ruleset of [].constructor(data);let index = index">
+  <ng-container [ngTemplateOutlet]="rulesetContainerTpl" [ngTemplateOutletContext]="{ruleset, parent: data, index}"/>
+</div>
+<ng-template #rulesetContainerTpl let-ruleset=ruleset let-parent=parent let-index=index>
+  <ng-container [ngSwitch]="ruleset.type">
+    <div class="ruleset-container" *ngSwitchCase="'Ruleset'"
+         (mouseover)="$event.stopPropagation();setCandidateRuleset(ruleset)"
+         (mouseleave)="$event.stopPropagation();setCandidateRuleset(null)">
+      <div><strong>Type:</strong> {{ ruleset.type }}</div>
+      <div><strong>condition:</strong> {{ ruleset.condition || 'N/A' }}</div>
+      <ng-container
+        *ngFor="let rulesetNew of ruleset.rules; let index = index"
+        [ngTemplateOutlet]="rulesetContainerTpl"
+        [ngTemplateOutletContext]="{ruleset: rulesetNew, parent: ruleset, index}"/>
+
+    </div>
+    <ng-container *ngSwitchCase="'Rule'">
+      <div class="rule-item"
+           (dragstart)="onDragStart(parent, index)"
+           (dragend)="onDragEnd()"
+           (mouseover)="setCandidateSortableRule(index, $event)"
+           (mouseleave)="setCandidateSortableRule(null, $event)"
+           draggable="true">
+        <div><strong>Type:</strong> {{ ruleset.type }}</div>
+        <div><strong>condition:</strong> {{ ruleset.condition || 'N/A' }}</div>
+        <div><strong>Field:</strong> {{ ruleset.field || 'N/A' }}</div>
+        <div><strong>Operator:</strong> {{ ruleset.operator || 'N/A' }}</div>
+        <div><strong>Value:</strong> {{ ruleset.value || 'N/A' }}</div>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-template>
